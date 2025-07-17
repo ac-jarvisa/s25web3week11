@@ -1,5 +1,5 @@
 //object to store player information
-const player = {
+let player = {
 	"Name": "Bob",
 	"Score": 0,
 	"CombinedScore": 0,
@@ -65,6 +65,9 @@ function setStats(){
 						<p><span>Wins: ${player.GameStats.Impossible[0]}</span><span>Loses: ${player.GameStats.Impossible[1]}</span></p>`;
 
 	statContainer.innerHTML = template;
+
+	const playerData = JSON.stringify(player);
+	localStorage.setItem(player.Name, playerData);
 }
 
 document.querySelector("body").addEventListener("keydown", function(event){
@@ -170,3 +173,18 @@ function overlay(h2Class){
 		});
 	}
 }
+
+document.querySelector(".overlay input").addEventListener("blur", function(){
+	if(!this.value){
+		this.classList.add("error");
+	}else{
+		this.classList.remove("error");
+		const playerData = localStorage.getItem(this.value);
+		if(playerData){
+			player = JSON.parse(playerData);
+		}else{
+			player.Name = this.value;
+			setStats();
+		}
+	}
+});
