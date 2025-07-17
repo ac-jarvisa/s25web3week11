@@ -148,7 +148,10 @@ function overlay(h2Class){
 		//add event listeners to the buttons, but only if this is the first time here (or after page refresh)
 		//use event delegation so there aren't multiple listeners
 		document.querySelector(".difButtons").addEventListener("click", function(event){
-			if(event.target.classList.contains("dif")){
+			const userInput = document.querySelector(".overlay input");
+			if(!userInput.value){
+				userInput.classList.add("error");
+			}else if(event.target.classList.contains("dif")){
 				//set the speed and level variables for difficulty
 				level = event.target.textContent;
 				speed = difficulty[event.target.textContent];
