@@ -1,6 +1,6 @@
 //object to store player information
-const player = {
-	"Name": "Bob",
+let player = {
+	"Name": "",
 	"Score": 0,
 	"CombinedScore": 0,
 	"GameStats": {
@@ -65,6 +65,13 @@ function setStats(){
 						<p><span>Wins: ${player.GameStats.Impossible[0]}</span><span>Loses: ${player.GameStats.Impossible[1]}</span></p>`;
 
 	statContainer.innerHTML = template;
+
+	//store the stats into local storage
+	//take the player object and convert it to JSON, and store it with a key
+	//that is the user's name
+	const playerData = JSON.stringify(player);
+	//add the data to local storage
+	localStorage.setItem(player.Name, playerData);
 }
 
 document.querySelector("body").addEventListener("keydown", function(event){
@@ -145,7 +152,12 @@ function overlay(h2Class){
 		//add event listeners to the buttons, but only if this is the first time here (or after page refresh)
 		//use event delegation so there aren't multiple listeners
 		document.querySelector(".difButtons").addEventListener("click", function(event){
-			if(event.target.classList.contains("dif")){
+			//check to see if the user actually entered a name
+			const userInput = document.querySelector(".overlay input");
+			if(!userInput.value){
+				//the field is blank, so add the error class
+				userInput.classList.add("error");
+			}else if(event.target.classList.contains("dif")){
 				//set the speed and level variables for difficulty
 				level = event.target.textContent;
 				speed = difficulty[event.target.textContent];
@@ -170,3 +182,30 @@ function overlay(h2Class){
 		});
 	}
 }
+
+document.querySelector(".overlay input").addEventListener("blur", function(){
+	//first, check to see if the field is blank
+	if(!this.value){
+		//if the field is blank, set an error class on the field
+		this.classList.add("error");
+	}else{
+		//just in case, remove the error class
+		this.classList.remove("error");
+
+		//if they did type something, try to get that user's data from local storage
+		const playerData = localStorage.getItem(this.value);
+
+		if(playerData){
+			//if there is data matching that user name...
+			//turn the string back into an object, and set it to the player object
+			player = JSON.parse(playerData);
+		}else{
+			//if there is no data matching that username...
+			//then set the player's name to whatever what typed
+			player.Name = this.value;
+			//and set the stats for the game (as well as store the new user's data
+			//in local storage)
+			setStats();
+		}
+	}
+});
